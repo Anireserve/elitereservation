@@ -1293,34 +1293,27 @@ function showTab(name, btn) {
 function renderAptTable() {
   document.getElementById('aptCount').textContent = appartements.length;
   let html = `<table><thead><tr>
-    <th>Nom</th><th>Cap.</th><th>Ch.</th>
-    <th>Prix HS</th><th>Frais HS</th>
-    <th>Prix MS</th><th>Frais MS</th>
-    <th>Prix BS</th><th>Frais BS</th>
-    <th>iCal Airbnb</th><th>Actions</th>
+    <th>Nom</th>
+    <th>Capacité</th>
+    <th>Chambres</th>
+    <th>Airbnb</th>
+    <th>Actions</th>
   </tr></thead><tbody>`;
   appartements.forEach((apt, i) => {
-    const f = v => v > 0 ? v.toLocaleString('fr-FR') + ' ₪' : '<span style="color:var(--text-light)">—</span>';
     html += `<tr>
       <td>
         <div style="font-weight:700">${apt.nom}</div>
         ${apt.notes ? `<div style="font-size:0.72rem;color:var(--text-muted)">${apt.notes}</div>` : ''}
       </td>
-      <td style="text-align:center;font-weight:600">${apt.cap}</td>
-      <td style="text-align:center">${apt.ch}</td>
-      <td style="text-align:center" class="price-cell">${apt.hs > 0 ? apt.hs.toLocaleString('fr-FR') + ' ₪' : '<span style="color:var(--text-light)">—</span>'}</td>
-      <td style="text-align:center" class="frais-cell" >${f(apt.frais_hs)}</td>
-      <td style="text-align:center;color:#065f46">${apt.ms > 0 ? apt.ms.toLocaleString('fr-FR') + ' ₪' : '<span style="color:var(--text-light)">—</span>'}</td>
-      <td style="text-align:center" class="frais-cell">${f(apt.frais_ms)}</td>
-      <td style="text-align:center;color:#1e40af">${apt.bs > 0 ? apt.bs.toLocaleString('fr-FR') + ' ₪' : '<span style="color:var(--text-light)">—</span>'}</td>
-      <td style="text-align:center" class="frais-cell">${f(apt.frais_bs)}</td>
-      <td>
+      <td data-label="Capacité" style="text-align:center;font-weight:700">${apt.cap} <span style="font-size:0.75rem;font-weight:400;color:var(--text-muted)">pers.</span></td>
+      <td data-label="Chambres" style="text-align:center">${apt.ch} ch.</td>
+      <td data-label="Airbnb">
         ${apt.ical
           ? `<span class="badge badge-airbnb">🔴 Connecté</span>`
           : `<span class="badge badge-grey">⚪ Non connecté</span>`}
       </td>
-      <td style="white-space:nowrap">
-        <button class="btn btn-ghost btn-sm" onclick="openAptModal(${i})">✏️ Modifier</button>
+      <td data-label="Actions" style="white-space:nowrap">
+        <button class="btn btn-ghost btn-sm" onclick="openAptModal(${i})">✏️</button>
         <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="deleteApt(${i})">🗑️</button>
       </td>
     </tr>`;
