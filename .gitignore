@@ -1,0 +1,15 @@
+# Données temporaires
+ical_data.json
+
+# macOS
+.DS_Store
+__MACOSX/
+
+# Node
+node_modules/
+.vercel/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo

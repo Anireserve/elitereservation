@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/ical-data.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    { "src": "/api/ical-data", "dest": "/api/ical-data.js" },
+    { "src": "/api/refresh",   "dest": "/api/ical-data.js" },
+    { "src": "/(.*)",          "dest": "/index.html" }
+  ]
+}

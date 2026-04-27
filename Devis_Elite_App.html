@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elite Home Group — Calculateur de Devis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f1f5f9;
+  --card: #ffffff;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --primary-light: #eff6ff;
+  --primary-border: #bfdbfe;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --green: #16a34a;
+  --green-bg: #f0fdf4;
+  --green-border: #bbf7d0;
+  --red: #dc2626;
+  --red-bg: #fef2f2;
+  --red-border: #fecaca;
+  --yellow: #d97706;
+  --yellow-bg: #fffbeb;
+  --yellow-border: #fde68a;
+  --orange: #ea580c;
+  --orange-bg: #fff7ed;
+  --orange-border: #fed7aa;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── HEADER ─────────────────────────────────────────────── */
+header {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header-logo {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+.header-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+.header-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+.header-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--red-bg);
+  border: 1px solid var(--red-border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--red);
+}
+.live-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--red);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.4)} }
+
+/* ── MAIN LAYOUT ─────────────────────────────────────────── */
+.main {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 28px 24px;
+}
+
+/* ── NAV TABS ─────────────────────────────────────────────── */
+.nav-pills {
+  display: flex;
+  gap: 6px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 5px;
+  width: fit-content;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+.pill-btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.pill-btn:hover { color: var(--text); background: var(--bg); }
+.pill-btn.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 2px 8px rgba(37,99,235,.35);
+}
+
+/* ── CARDS ────────────────────────────────────────────────── */
+.card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.card-pad { padding: 24px; }
+.card + .card { margin-top: 16px; }
+
+/* ── SEARCH FORM ──────────────────────────────────────────── */
+.search-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.search-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.field-group { display: flex; flex-direction: column; gap: 5px; }
+.field-group label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.field-group input {
+  width: 100%;
+  padding: 10px 13px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--bg);
+  transition: border-color .15s, box-shadow .15s;
+}
+.field-group input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+}
+.field-group .hint { font-size: 0.7rem; color: var(--text-light); }
+
+.search-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Season badge */
+.season-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1.5px solid transparent;
+  transition: all .2s;
+}
+.season-hs   { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+.season-ms   { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+.season-bs   { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+.season-none { background: var(--bg); color: var(--text-muted); border-color: var(--border); }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.83rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 1px 3px rgba(37,99,235,.3);
+}
+.btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,.35); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn-danger { background: var(--red); color: white; }
+.btn-danger:hover { background: #b91c1c; }
+.btn-success { background: #16a34a; color: white; }
+.btn-success:hover { background: #15803d; }
+.btn-secondary {
+  background: white;
+  color: var(--text);
+  border: 1.5px solid var(--border);
+}
+.btn-secondary:hover { background: var(--bg); border-color: var(--border-strong); }
+.btn-ghost {
+  background: transparent;
+  color: var(--primary);
+  padding: 7px 14px;
+}
+.btn-ghost:hover { background: var(--primary-light); }
+.btn-sm { padding: 5px 11px; font-size: 0.75rem; border-radius: 6px; }
+
+/* ── LOADING ──────────────────────────────────────────────── */
+.loading-bar {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+  font-size: 0.83rem;
+  color: var(--primary);
+  font-weight: 500;
+}
+.spinner {
+  width: 16px; height: 16px;
+  border: 2.5px solid var(--primary-border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── SUMMARY BAR ──────────────────────────────────────────── */
+.summary-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  align-items: center;
+}
+.summary-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 13px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  box-shadow: var(--shadow-sm);
+}
+.summary-chip strong { color: var(--primary); font-weight: 700; }
+
+/* ── RESULTS TABLE ────────────────────────────────────────── */
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.results-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.results-count { font-size: 0.78rem; color: var(--text-muted); }
+
+.table-wrap {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+thead tr { background: #1e293b; }
+thead th {
+  padding: 11px 14px;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background .1s;
+}
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #f8fafc !important; }
+tbody td { padding: 12px 14px; vertical-align: middle; }
+
+.row-match    { background: #f0fdf9; }
+.row-partial  { background: #fefce8; }
+.row-occupied { background: #fef2f2; }
+.row-empty    { background: var(--bg); color: var(--text-muted); }
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.badge-green  { background: var(--green-bg); color: #15803d; border: 1px solid var(--green-border); }
+.badge-red    { background: var(--red-bg);   color: #b91c1c; border: 1px solid var(--red-border); }
+.badge-yellow { background: var(--yellow-bg); color: #92400e; border: 1px solid var(--yellow-border); }
+.badge-grey   { background: var(--bg); color: var(--text-muted); border: 1px solid var(--border); }
+.badge-blue   { background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary-border); }
+.badge-airbnb { background: #fff1f2; color: #be123c; border: 1px solid #fecdd3; }
+
+/* Table cells */
+.apt-name { font-weight: 700; color: var(--text); font-size: 0.85rem; }
+.apt-sub  { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+.apt-live { font-size: 0.68rem; color: var(--red); font-weight: 600; margin-top: 2px; display: block; }
+.apt-manual { font-size: 0.68rem; color: var(--text-light); margin-top: 2px; display: block; }
+.price-cell { font-weight: 700; color: var(--primary); }
+.total-cell {
+  font-weight: 800;
+  color: var(--text);
+  font-size: 0.92rem;
+  background: var(--primary-light);
+  padding: 5px 10px;
+  border-radius: 6px;
+  display: inline-block;
+}
+.frais-cell { color: var(--orange); font-weight: 600; }
+.eq-cell { font-size: 0.75rem; color: var(--text-muted); max-width: 200px; }
+.link-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--primary-light); color: var(--primary);
+  border: 1px solid var(--primary-border); border-radius: 6px;
+  padding: 4px 10px; font-size: 0.72rem; font-weight: 600;
+  text-decoration: none; transition: all .15s;
+}
+.link-btn:hover { background: var(--primary); color: white; }
+
+.no-results {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.no-results .icon { font-size: 2.5rem; display: block; margin-bottom: 10px; }
+
+/* ── SECTION HEADER ───────────────────────────────────────── */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.section-sub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+/* ── STAT CARDS ───────────────────────────────────────────── */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.stat-num {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.stat-lbl {
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-top: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── INFO BOX ─────────────────────────────────────────────── */
+.info-box {
+  background: var(--yellow-bg);
+  border: 1px solid var(--yellow-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 0.82rem;
+  color: #78350f;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+/* ── MODAL ────────────────────────────────────────────────── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,.4);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  width: 660px;
+  max-width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.modal-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.modal-close {
+  width: 30px; height: 30px;
+  border: none; background: var(--bg); border-radius: 6px;
+  cursor: pointer; font-size: 1rem; color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.modal-close:hover { background: var(--border); color: var(--text); }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-grid .full { grid-column: 1/-1; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  color: var(--text);
+  background: white;
+  transition: border-color .15s, box-shadow .15s;
+}
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+}
+
+.frais-section {
+  grid-column: 1/-1;
+  background: var(--orange-bg);
+  border: 1.5px solid var(--orange-border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.frais-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--orange);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+.frais-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.frais-grid label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-bottom: 4px;
+  display: block;
+}
+.frais-note {
+  font-size: 0.7rem;
+  color: var(--orange);
+  margin-top: 8px;
+}
+
+.ical-hint {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 5px;
+  background: var(--red-bg);
+  border: 1px solid var(--red-border);
+  border-radius: 6px;
+  padding: 7px 10px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── ICAL STATUS ──────────────────────────────────────────── */
+#icalStatus {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: normal;
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .search-grid { grid-template-columns: 1fr 1fr; }
+  header { padding: 0 16px; }
+  .main { padding: 16px; }
+}
+@media (max-width: 600px) {
+  .search-grid { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .frais-grid { grid-template-columns: 1fr; }
+  .nav-pills { width: 100%; overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-brand">
+    <div class="header-logo">🏠</div>
+    <div>
+      <div class="header-title">Elite Home Group Israel</div>
+      <div class="header-sub">Netanya · Calculateur de devis</div>
+    </div>
+  </div>
+  <div class="header-badge">
+    <div class="live-dot"></div>
+    Disponibilités en direct · Airbnb
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- NAV -->
+  <div class="nav-pills">
+    <button class="pill-btn active" onclick="showTab('devis', this)">🔍 Faire un devis</button>
+    <button class="pill-btn" onclick="showTab('appartements', this)">🏠 Appartements</button>
+    <button class="pill-btn" onclick="showTab('reservations', this)">📅 Réservations</button>
+  </div>
+
+  <!-- ═══════════ TAB DEVIS ═══════════ -->
+  <div id="tab-devis">
+
+    <div class="search-card">
+      <div class="search-grid">
+        <div class="field-group">
+          <label>📅 Date d'arrivée</label>
+          <input type="date" id="dateArrivee" oninput="updateSeason()">
+        </div>
+        <div class="field-group">
+          <label>📅 Date de départ</label>
+          <input type="date" id="dateDepart" oninput="updateSeason()">
+        </div>
+        <div class="field-group">
+          <label>👥 Personnes</label>
+          <input type="number" id="nbPersonnes" min="1" max="30" placeholder="Ex : 4">
+        </div>
+        <div class="field-group">
+          <label>💰 Budget max (₪)</label>
+          <input type="number" id="budget" min="0" placeholder="Sans limite si vide">
+          <span class="hint">Laissez vide = pas de limite</span>
+        </div>
+      </div>
+
+      <div class="search-actions">
+        <div id="seasonBadge" class="season-pill season-none">ℹ️ Entrez une date pour voir la saison</div>
+        <button class="btn btn-primary" id="searchBtn" onclick="searchApts()">🔍 Rechercher</button>
+        <button onclick="doRefresh(this)" class="btn btn-danger">🔄 Rafraîchir Airbnb</button>
+        <span id="icalStatus"></span>
+      </div>
+    </div>
+
+    <div class="loading-bar" id="loadingBar">
+      <div class="spinner"></div>
+      <span id="loadingText">Lecture des calendriers Airbnb…</span>
+    </div>
+
+    <div id="summaryBar" class="summary-bar" style="display:none"></div>
+
+    <div class="results-header">
+      <div class="results-title">Résultats</div>
+      <div class="results-count" id="resultsCount"></div>
+    </div>
+
+    <div id="resultsContainer">
+      <div class="no-results">
+        <span class="icon">🔍</span>
+        Entrez vos critères et cliquez sur Rechercher.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ TAB APPARTEMENTS ═══════════ -->
+  <div id="tab-appartements" style="display:none">
+    <div class="section-header">
+      <div>
+        <div class="section-title">🏠 Appartements <span id="aptCount" style="color:var(--text-muted);font-weight:500">0</span></div>
+        <div class="section-sub">🔴 iCal connecté = disponibilités en temps réel depuis Airbnb</div>
+      </div>
+      <button class="btn btn-success" onclick="openAptModal()">+ Ajouter</button>
+    </div>
+    <div class="table-wrap">
+      <div id="aptTableContainer"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ TAB RESERVATIONS ═══════════ -->
+  <div id="tab-reservations" style="display:none">
+    <div class="info-box">
+      <span>ℹ️</span>
+      <span>Ces réservations s'appliquent uniquement aux appartements <strong>sans lien iCal Airbnb</strong>. Pour les appartements connectés, les disponibilités sont lues directement depuis Airbnb.</span>
+    </div>
+    <div class="stat-row" id="statCards"></div>
+    <div class="section-header">
+      <div class="section-title">📅 Réservations manuelles</div>
+      <button class="btn btn-success" onclick="openResModal()">+ Ajouter</button>
+    </div>
+    <div class="table-wrap">
+      <div id="resTableContainer"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════ MODAL APPARTEMENT ═══════════ -->
+<div class="modal-overlay" id="aptModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="aptModalTitle">Ajouter un appartement</div>
+      <button class="modal-close" onclick="closeModal('aptModal')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Nom de l'appartement *</label>
+        <input type="text" id="apt_nom" placeholder="Ex : Hashmonaim VII - Groupe ELITE HOME">
+      </div>
+      <div class="form-group">
+        <label>Capacité max (pers.) *</label>
+        <input type="number" id="apt_cap" min="1" max="30">
+      </div>
+      <div class="form-group">
+        <label>Nb chambres</label>
+        <input type="number" id="apt_ch" min="0">
+      </div>
+      <div class="form-group">
+        <label>Nb salles de bain</label>
+        <input type="number" id="apt_sdb" min="0">
+      </div>
+      <div class="form-group">
+        <label>Superficie m²</label>
+        <input type="number" id="apt_sup" min="0">
+      </div>
+      <div class="form-group">
+        <label>🌞 Prix/nuit Haute Saison ₪ *</label>
+        <input type="number" id="apt_hs" min="0" placeholder="Juil – Août">
+      </div>
+      <div class="form-group">
+        <label>🌤 Prix/nuit Mi-Saison ₪ *</label>
+        <input type="number" id="apt_ms" min="0" placeholder="Avr, Mai, Jun, Sep, Oct">
+      </div>
+      <div class="form-group">
+        <label>❄️ Prix/nuit Basse Saison ₪ *</label>
+        <input type="number" id="apt_bs" min="0" placeholder="Nov – Mars">
+      </div>
+      <div class="form-group full">
+        <label>Équipements</label>
+        <input type="text" id="apt_eq" placeholder="Ex : WiFi · Piscine · Parking · Climatisation">
+      </div>
+
+      <!-- FRAIS DE SERVICE -->
+      <div class="frais-section">
+        <div class="frais-section-title">🧾 Frais de service (₪ par séjour)</div>
+        <div class="frais-grid">
+          <div>
+            <label>🌞 Haute Saison</label>
+            <input type="number" id="apt_frais_hs" min="0" placeholder="Ex : 500">
+          </div>
+          <div>
+            <label>🌤 Mi-Saison</label>
+            <input type="number" id="apt_frais_ms" min="0" placeholder="Ex : 250">
+          </div>
+          <div>
+            <label>❄️ Basse Saison</label>
+            <input type="number" id="apt_frais_bs" min="0" placeholder="Ex : 150">
+          </div>
+        </div>
+        <div class="frais-note">Montant fixe par séjour — nettoyage, service Airbnb, etc. Affiché séparément dans les résultats.</div>
+      </div>
+
+      <div class="form-group full">
+        <label>🔴 Lien iCal Airbnb (disponibilités en temps réel)</label>
+        <input type="url" id="apt_ical" placeholder="https://www.airbnb.fr/calendar/ical/XXXXX.ics?t=XXXXX">
+        <div class="ical-hint">Airbnb → Calendrier → Disponibilité → Connecter les calendriers → Exporter → Copier le lien .ics</div>
+      </div>
+      <div class="form-group full">
+        <label>Lien annonce Airbnb</label>
+        <input type="url" id="apt_url" placeholder="https://www.airbnb.fr/rooms/...">
+      </div>
+      <div class="form-group full">
+        <label>Notes</label>
+        <input type="text" id="apt_notes" placeholder="Vue mer, proche centre, romantique…">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('aptModal')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveApt()">💾 Sauvegarder</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL RESERVATION ═══════════ -->
+<div class="modal-overlay" id="resModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="resModalTitle">Ajouter une réservation manuelle</div>
+      <button class="modal-close" onclick="closeModal('resModal')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Appartement *</label>
+        <select id="res_apt"></select>
+      </div>
+      <div class="form-group">
+        <label>Date d'arrivée *</label>
+        <input type="date" id="res_arr">
+      </div>
+      <div class="form-group">
+        <label>Date de départ *</label>
+        <input type="date" id="res_dep">
+      </div>
+      <div class="form-group">
+        <label>Nb personnes</label>
+        <input type="number" id="res_pers" min="1">
+      </div>
+      <div class="form-group">
+        <label>Statut</label>
+        <select id="res_statut">
+          <option>Confirmé</option>
+          <option>Optionnel</option>
+          <option>Bloqué</option>
+          <option>Annulé</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Source</label>
+        <select id="res_source">
+          <option>Airbnb</option>
+          <option>Site</option>
+          <option>Direct</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Nom du client</label>
+        <input type="text" id="res_client">
+      </div>
+      <div class="form-group">
+        <label>Montant (₪)</label>
+        <input type="number" id="res_montant" min="0">
+      </div>
+      <div class="form-group full">
+        <label>Notes</label>
+        <input type="text" id="res_notes">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('resModal')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveRes()">💾 Sauvegarder</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════
+let editAptIdx = -1, editResIdx = -1;
+// Données iCal chargées depuis le serveur local (lancer_devis.py)
+let ICAL_DATA = {};
+
+let appartements = [
+  { nom:"Apt 83361 — Netanya", cap:4, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1315345554016383361.ics?t=7694717924684c6f8fcd66996729d7bc", url:"https://www.airbnb.fr/rooms/1315345554016383361", notes:"Netanya" },
+  { nom:"Apt 53616 — Netanya", cap:3, ch:2, sdb:1, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1490708023786053616.ics?t=33e801ad23c64b069220c6be0a21d652", url:"https://www.airbnb.fr/rooms/1490708023786053616", notes:"Netanya" },
+  { nom:"Apt 67193 — Netanya", cap:3, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1629900440159467193.ics?t=1ec69b226c614330861185ba08e07a7a", url:"https://www.airbnb.fr/rooms/1629900440159467193", notes:"Netanya" },
+  { nom:"Apt 25731 — Netanya", cap:4, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1637882744798925731.ics?t=9ef7d150795a4410bdc3a908a645f091", url:"https://www.airbnb.fr/rooms/1637882744798925731", notes:"Netanya" },
+  { nom:"Apt 52810 — Netanya", cap:7, ch:4, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1533834667656852810.ics?t=67ab162d53724c8f80b0bb0761085516", url:"https://www.airbnb.fr/rooms/1533834667656852810", notes:"Netanya · ★4.78" },
+  { nom:"Apt 24670 — Netanya", cap:4, ch:4, sdb:3, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1626970716235924670.ics?t=e39d492eeba84defb85a9ae861427a55", url:"https://www.airbnb.fr/rooms/1626970716235924670", notes:"Netanya" },
+  { nom:"Apt 46519 — Netanya", cap:3, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1654299312702546519.ics?t=923fc85ccf0e4eb58039ebebfef012c0", url:"https://www.airbnb.fr/rooms/1654299312702546519", notes:"Netanya" },
+  { nom:"Apt 52163 — Netanya", cap:4, ch:4, sdb:3, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1224521245162452163.ics?t=4179f8c4d9e847eaab939fb3950811de", url:"https://www.airbnb.fr/rooms/1224521245162452163", notes:"Netanya · ★4.78" },
+  { nom:"Apt 33864 — Netanya", cap:4, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1175085191554333864.ics?t=67ea59578667405a81c3a54be03a336a", url:"https://www.airbnb.fr/rooms/1175085191554333864", notes:"Netanya · ★4.71" },
+  { nom:"Hébergement 76898 — Kfar Yona", cap:6, ch:4, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1466620094626476898.ics?t=af20cb726d9641de8e8b5f9e205ed495", url:"https://www.airbnb.fr/rooms/1466620094626476898", notes:"Kfar Yona" },
+  { nom:"Apt 99317 — Netanya", cap:4, ch:4, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1433841370821199317.ics?t=4b031929599d41a3b82b940f29758706", url:"https://www.airbnb.fr/rooms/1433841370821199317", notes:"Netanya · ★4.6" },
+  { nom:"Apt 77569 — Netanya", cap:2, ch:1, sdb:1, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1521653346666177569.ics?t=405f1b25a678487c89b525f830a950bf", url:"https://www.airbnb.fr/rooms/1521653346666177569", notes:"Netanya" },
+  { nom:"Apt 28715 — Netanya", cap:3, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1612237951481128715.ics?t=4508d38c3b3b4d7e95e565aae39d613d", url:"https://www.airbnb.fr/rooms/1612237951481128715", notes:"Netanya" },
+  { nom:"Apt 01411 — Netanya", cap:3, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/36501411.ics?t=7391189aafcd404fa810711f5a243c83", url:"https://www.airbnb.fr/rooms/36501411", notes:"Netanya" },
+  { nom:"Apt 28256 — Netanya", cap:3, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1605910608745528256.ics?t=61493af62ab34bc1a92b791f0452265a", url:"https://www.airbnb.fr/rooms/1605910608745528256", notes:"Netanya" },
+  { nom:"Apt 60747 — Netanya", cap:3, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1303437225728460747.ics?t=2868999189d949bf80f11a8a1c18ab6c", url:"https://www.airbnb.fr/rooms/1303437225728460747", notes:"Netanya · ★4.5" },
+  { nom:"Apt 66024 — Netanya", cap:6, ch:2, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1506397101353566024.ics?t=6d4dd98d55224c2ca1f3e2cb1eae80d7", url:"https://www.airbnb.fr/rooms/1506397101353566024", notes:"Netanya · ★3.57" },
+  { nom:"Apt 25761 — Netanya", cap:4, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1612283322683825761.ics?t=de62833287804c46b18c024faf4eb0f0", url:"https://www.airbnb.fr/rooms/1612283322683825761", notes:"Netanya" },
+  { nom:"Apt 88745 — Netanya", cap:4, ch:3, sdb:3, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1241953428669588745.ics?t=1d4fb76bbbff4faca40237b6132d0bab", url:"https://www.airbnb.fr/rooms/1241953428669588745", notes:"Netanya · ★4.29" },
+  { nom:"Apt 25814 — Netanya", cap:3, ch:2, sdb:1, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1629928696618625814.ics?t=fb695f212ad844deb76ff6b9abdbe682", url:"https://www.airbnb.fr/rooms/1629928696618625814", notes:"Netanya" },
+  { nom:"Apt 98316 — Netanya", cap:1, ch:1, sdb:1, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1629663765623298316.ics?t=cacb8c782aad45d5be2bcab2b87077f7", url:"https://www.airbnb.fr/rooms/1629663765623298316", notes:"Netanya" },
+  { nom:"Apt 28766 — Netanya", cap:1, ch:1, sdb:1, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1629651714774328766.ics?t=3397fd65e68b4aea8df2b6cda3ccdef9", url:"https://www.airbnb.fr/rooms/1629651714774328766", notes:"Netanya" },
+  { nom:"Apt 00321 — Netanya", cap:5, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1479665460583700321.ics?t=dd94ba77ea484d78ba913ba7c1ec4d49", url:"https://www.airbnb.fr/rooms/1479665460583700321", notes:"Netanya · ★4.75" },
+  { nom:"Apt 81203 — Tel Aviv-Yafo", cap:3, ch:3, sdb:1, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1502931916854381203.ics?t=23c22a1e8c744114aed1b110badf1e66", url:"https://www.airbnb.fr/rooms/1502931916854381203", notes:"Tel Aviv-Yafo" },
+  { nom:"Apt 43435 — Netanya", cap:4, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1335310134902043435.ics?t=d308e538a2a2413295738453c2d952cb", url:"https://www.airbnb.fr/rooms/1335310134902043435", notes:"Netanya" },
+  { nom:"Apt 45560 — Netanya", cap:3, ch:2, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1513138205634145560.ics?t=a59a6dcf4c794a66b141ed1ade79c664", url:"https://www.airbnb.fr/rooms/1513138205634145560", notes:"Netanya" },
+  { nom:"Hébergement 66319 — Netanya", cap:8, ch:5, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1640523959762966319.ics?t=55b19ef9a97a4e1e92de9d626420cb95", url:"https://www.airbnb.fr/rooms/1640523959762966319", notes:"Netanya" },
+  { nom:"Apt 70682 — Netanya", cap:1, ch:1, sdb:1, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1473183298554670682.ics?t=d78811fbeb2d4cfaa1f5521722e4a855", url:"https://www.airbnb.fr/rooms/1473183298554670682", notes:"Netanya" },
+  { nom:"Hébergement 88941 — Kfar Yona", cap:10, ch:5, sdb:3, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1169666737889988941.ics?t=702ecd34f28942d488eb740ed4b81ee9", url:"https://www.airbnb.fr/rooms/1169666737889988941", notes:"Kfar Yona · ★4.33" },
+  { nom:"Apt 57229 — Kfar Yona", cap:5, ch:5, sdb:3, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1415005754265857229.ics?t=669a15619c414132a9992d1a683eeb78", url:"https://www.airbnb.fr/rooms/1415005754265857229", notes:"Kfar Yona · ★3.67" },
+  { nom:"Villa 72659 — Netanya", cap:5, ch:6, sdb:5, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/39772659.ics?t=214cbdad1d584d67b4a8164d063189d0", url:"https://www.airbnb.fr/rooms/39772659", notes:"Netanya" },
+  { nom:"Apt 40567 — Tel Aviv-Yafo", cap:1, ch:1, sdb:1, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1668109411780640567.ics?t=91cf6b2684554092990876ca1c80890f", url:"https://www.airbnb.fr/rooms/1668109411780640567", notes:"Tel Aviv-Yafo" },
+  { nom:"Apt 65146 — Netanya", cap:5, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/49165146.ics?t=e1200003f1c84f2a895abbec2bc1aea9", url:"https://www.airbnb.fr/rooms/49165146", notes:"Netanya · ★4.61" },
+  { nom:"Apt 31930 — Netanya", cap:3, ch:2, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1298592173553231930.ics?t=71e76567d89e460bb06829946f545472", url:"https://www.airbnb.fr/rooms/1298592173553231930", notes:"Netanya" },
+  { nom:"Apt 91879 — Netanya", cap:4, ch:2, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1384120621324091879.ics?t=cdb9c12360ca4144822bf851dd7cb795", url:"https://www.airbnb.fr/rooms/1384120621324091879", notes:"Netanya · ★5.0" },
+  { nom:"Apt 45649 — Netanya", cap:5, ch:4, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1445523645377045649.ics?t=bc26a86dff824a1d8e7a67c845fa259b", url:"https://www.airbnb.fr/rooms/1445523645377045649", notes:"Netanya · ★4.0" },
+  { nom:"Apt 75248 — Netanya", cap:4, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1192536760548875248.ics?t=d28976efc4c44f65b2e48dc60bf715f5", url:"https://www.airbnb.fr/rooms/1192536760548875248", notes:"Netanya · ★4.5" },
+  { nom:"Apt 46032 — Netanya", cap:4, ch:4, sdb:3, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1645556918794746032.ics?t=84f31d2c06864d719f2716f491b1255a", url:"https://www.airbnb.fr/rooms/1645556918794746032", notes:"Netanya" },
+  { nom:"Apt 21882 — Netanya", cap:3, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1304188349571321882.ics?t=c04ebcfe54c64dfd87c82209122b6614", url:"https://www.airbnb.fr/rooms/1304188349571321882", notes:"Netanya · ★5.0" },
+  { nom:"Apt 91605 — Netanya", cap:6, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1054952503406291605.ics?t=1de0ba887a5f426ebb12856e1e056a47", url:"https://www.airbnb.fr/rooms/1054952503406291605", notes:"Netanya · ★4.31" },
+  { nom:"Apt 69599 — Netanya", cap:3, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/1046081133849569599.ics?t=1c17af95582444048a24caba7b9da58f", url:"https://www.airbnb.fr/rooms/1046081133849569599", notes:"Netanya · ★4.86" },
+  { nom:"Apt 88252 — Jérusalem", cap:6, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/990467087965488252.ics?t=4c6cb741a15d4c2c8d37de3bc0a5b4a2", url:"https://www.airbnb.fr/rooms/990467087965488252", notes:"Jérusalem · ★4.8" },
+  { nom:"Apt 55059 — Netanya", cap:3, ch:2, sdb:1, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/957684850185155059.ics?t=5cfe285c675f455280ee82a6d8b48a1e", url:"https://www.airbnb.fr/rooms/957684850185155059", notes:"Netanya · ★4.33" },
+  { nom:"Apt 85169 — Netanya", cap:3, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/955048939559085169.ics?t=9c473a5fbd6549fc96829211e105bfb7", url:"https://www.airbnb.fr/rooms/955048939559085169", notes:"Netanya · ★4.62" },
+  { nom:"Apt 02852 — Netanya", cap:4, ch:3, sdb:1, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/922400765551402852.ics?t=d0c6ebe86540468582fb3eb740b1658a", url:"https://www.airbnb.fr/rooms/922400765551402852", notes:"Netanya" },
+  { nom:"Apt 37229 — Netanya", cap:5, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/907663434158237229.ics?t=45a1ea06e10b405ca65405abb2e6f009", url:"https://www.airbnb.fr/rooms/907663434158237229", notes:"Netanya" },
+  { nom:"Apt 37730 — Netanya", cap:5, ch:3, sdb:1, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/888213373135337730.ics?t=3f1f44b2143d4bff87914c7b9bcd809e", url:"https://www.airbnb.fr/rooms/888213373135337730", notes:"Netanya · ★4.6" },
+  { nom:"Hébergement 89961 — Kfar Yona", cap:5, ch:5, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/811642557269889961.ics?t=b5b752a7036e434092958d9c6440130a", url:"https://www.airbnb.fr/rooms/811642557269889961", notes:"Kfar Yona · ★4.54" },
+  { nom:"Apt 32753 — Ra\'anana", cap:4, ch:4, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/795626826720732753.ics?t=fb85b4865bee412d901182c516b9b23f", url:"https://www.airbnb.fr/rooms/795626826720732753", notes:"Ra\'anana · ★4.53" },
+  { nom:"Apt 16645 — Netanya", cap:5, ch:3, sdb:3, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/767323456779416645.ics?t=0b4ae61650d44376a5e2402bac33da2d", url:"https://www.airbnb.fr/rooms/767323456779416645", notes:"Netanya · ★4.86" },
+  { nom:"Gad Mahness XVIII - Groupe Maison d\'Élite", cap:6, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/48538162.ics?t=bb3ce0d988634a30a3b72185fedd913b", url:"https://www.airbnb.fr/rooms/48538162", notes:"Netanya · ★4.38" },
+  { nom:"Histadrute - Groupe Maison d\'Élite", cap:7, ch:3, sdb:1, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/45095363.ics?t=8586896da37248b892d637da58fc9983", url:"https://www.airbnb.fr/rooms/45095363", notes:"Netanya · ★4.68" },
+  { nom:"Nitza XIV - Élite Home Group", cap:4, ch:2, sdb:1, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/42507906.ics?t=e45c59c6043c45a3ad08518c45ca5fa4", url:"https://www.airbnb.fr/rooms/42507906", notes:"Netanya · ★4.36" },
+  { nom:"Hashmonaim VII - Groupe ELITE HOME", cap:4, ch:3, sdb:2, sup:0, hs:0, ms:0, bs:0, frais_hs:0, frais_ms:0, frais_bs:0, eq:"", ical:"https://www.airbnb.fr/calendar/ical/40385717.ics?t=c9ccd51ef12a4329a8eadf54f03d873c", url:"https://www.airbnb.fr/rooms/40385717", notes:"Netanya · ★4.9" }
+];
+
+let reservations = [];
+
+// ═══════════════════════════════════════════════════════
+// iCAL — lecture depuis serveur local (lancer_devis.py)
+// ═══════════════════════════════════════════════════════
+async function loadIcalData() {
+  try {
+    const resp = await fetch('/ical_data.json', { cache: 'no-cache' });
+    if (!resp.ok) throw new Error();
+    ICAL_DATA = await resp.json();
+    console.log('✅ Données Airbnb chargées:', Object.keys(ICAL_DATA).length, 'apparts');
+  } catch(e) {
+    console.warn('Serveur local non détecté — lancez lancer_devis.py');
+    ICAL_DATA = {};
+  }
+}
+
+async function refreshIcalData() {
+  try {
+    const resp = await fetch('/refresh', { cache: 'no-cache' });
+    if (!resp.ok) throw new Error();
+    ICAL_DATA = await resp.json();
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
+
+function isBlockedByIcal(aptName, arrDate, depDate) {
+  const entry = ICAL_DATA[aptName];
+  if (!entry || !entry.ok) return null; // null = données non disponibles
+  for (const ev of entry.events) {
+    const evStart = new Date(ev.start);
+    const evEnd   = new Date(ev.end);
+    if (evStart < depDate && evEnd > arrDate) return true;
+  }
+  return false;
+}
+
+// ═══════════════════════════════════════════════════════
+// SEASON
+// ═══════════════════════════════════════════════════════
+function getSeason(dateStr) {
+  if (!dateStr) return null;
+  const m = new Date(dateStr).getMonth() + 1;
+  if (m === 7 || m === 8) return 'hs';
+  if ([4,5,6,9,10].includes(m)) return 'ms';
+  return 'bs';
+}
+function getPrix(apt, dateStr) {
+  const s = getSeason(dateStr);
+  return s === 'hs' ? apt.hs : s === 'ms' ? apt.ms : apt.bs;
+}
+function getFrais(apt, dateStr) {
+  const s = getSeason(dateStr);
+  return s === 'hs' ? (apt.frais_hs||0) : s === 'ms' ? (apt.frais_ms||0) : (apt.frais_bs||0);
+}
+function updateSeason() {
+  const d = document.getElementById('dateArrivee').value;
+  const badge = document.getElementById('seasonBadge');
+  const s = getSeason(d);
+  badge.className = 'season-pill';
+  if (s === 'hs')    { badge.classList.add('season-hs'); badge.textContent = '🌞 Haute Saison — Juillet · Août'; }
+  else if (s==='ms') { badge.classList.add('season-ms'); badge.textContent = '🌤 Mi-Saison — Avr, Mai, Jun, Sep, Oct'; }
+  else if (s==='bs') { badge.classList.add('season-bs'); badge.textContent = '❄️ Basse Saison — Novembre à Mars'; }
+  else               { badge.classList.add('season-none'); badge.textContent = 'ℹ️ Entrez une date pour voir la saison'; }
+}
+
+// ═══════════════════════════════════════════════════════
+// MANUAL AVAILABILITY
+// ═══════════════════════════════════════════════════════
+function isBlockedManual(apt, arrDate, depDate) {
+  return reservations.some(r => {
+    if (r.apt !== apt.nom || r.statut === 'Annulé') return false;
+    const rArr = new Date(r.arr), rDep = new Date(r.dep);
+    return rArr < depDate && rDep > arrDate;
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════════════════
+async function searchApts() {
+  const arrStr = document.getElementById('dateArrivee').value;
+  const depStr = document.getElementById('dateDepart').value;
+  const nbPers = parseInt(document.getElementById('nbPersonnes').value) || 0;
+  const budget = parseFloat(document.getElementById('budget').value) || Infinity;
+  const container = document.getElementById('resultsContainer');
+  const countEl   = document.getElementById('resultsCount');
+  const summaryBar = document.getElementById('summaryBar');
+  const btn = document.getElementById('searchBtn');
+  const loadingBar = document.getElementById('loadingBar');
+
+  if (!arrStr || !depStr) { container.innerHTML = '<div class="no-results"><span class="icon">⚠️</span>Veuillez entrer les dates d\'arrivée et de départ.</div>'; return; }
+  const arr = new Date(arrStr), dep = new Date(depStr);
+  if (dep <= arr) { container.innerHTML = '<div class="no-results"><span class="icon">⚠️</span>La date de départ doit être après la date d\'arrivée.</div>'; return; }
+  const nights = Math.round((dep - arr) / 86400000);
+
+  btn.disabled = true;
+  loadingBar.style.display = 'flex';
+  container.innerHTML = '';
+  summaryBar.style.display = 'none';
+
+  const connectedCount = Object.keys(ICAL_DATA).filter(k => ICAL_DATA[k]?.ok).length;
+  document.getElementById('loadingText').textContent =
+    connectedCount > 0
+      ? `Vérification des disponibilités (${connectedCount} apparts connectés Airbnb)…`
+      : 'Vérification des disponibilités (lancez lancer_devis.py pour la connexion Airbnb)…';
+
+  await new Promise(r => setTimeout(r, 200));
+  loadingBar.style.display = 'none';
+  btn.disabled = false;
+
+  summaryBar.style.display = 'flex';
+  const fmtDate = d => new Date(d).toLocaleDateString('fr-FR');
+  summaryBar.innerHTML = `
+    <div class="summary-chip">📅 ${fmtDate(arrStr)} → ${fmtDate(depStr)}</div>
+    <div class="summary-chip">🌙 <strong>${nights}</strong> nuits</div>
+    ${nbPers ? `<div class="summary-chip">👥 <strong>${nbPers}</strong> personnes</div>` : ''}
+    ${budget < Infinity ? `<div class="summary-chip">💰 Max <strong>${budget.toLocaleString('fr-FR')} ₪</strong></div>` : ''}
+  `;
+
+  const results = appartements.map(apt => {
+    let dispo, dispoSource, dispoError = false;
+    if (apt.ical && ICAL_DATA[apt.nom]) {
+      const blocked = isBlockedByIcal(apt.nom, arr, dep);
+      if (blocked === null) {
+        dispo = !isBlockedManual(apt, arr, dep);
+        dispoSource = 'error'; dispoError = true;
+      } else {
+        dispo = !blocked;
+        dispoSource = 'airbnb';
+      }
+    } else if (apt.ical) {
+      dispo = !isBlockedManual(apt, arr, dep);
+      dispoSource = 'error'; dispoError = true;
+    } else {
+      dispo = !isBlockedManual(apt, arr, dep);
+      dispoSource = 'manual';
+    }
+    const prix   = getPrix(apt, arrStr);
+    const frais  = getFrais(apt, arrStr);
+    const base   = prix * nights;
+    const total  = base + frais;
+    const capsOk   = nbPers ? apt.cap >= nbPers : true;
+    const budgetOk = budget < Infinity ? total <= budget : true;
+    let score = 0;
+    if (dispo) score += 4;
+    if (capsOk) score += 2;
+    if (budgetOk) score += 1;
+    return { apt, dispo, dispoSource, dispoError, prix, frais, base, total, capsOk, budgetOk, score };
+  }).sort((a, b) => b.score - a.score);
+
+  const fullMatch = results.filter(r => r.dispo && r.capsOk && r.budgetOk).length;
+  const airbnbCount = results.filter(r => r.dispoSource === 'airbnb').length;
+  countEl.textContent = `${fullMatch} correspondance(s) parfaite(s) · ${airbnbCount} appart(s) lus depuis Airbnb`;
+
+  let html = `<div class="table-wrap"><table><thead><tr>
+    <th>Appartement</th>
+    <th>Disponibilité</th>
+    <th>Cap.</th>
+    ${nbPers ? '<th>Pers. OK ?</th>' : ''}
+    <th>Prix / nuit</th>
+    <th>${nights} nuits × prix</th>
+    <th>Frais service</th>
+    <th>TOTAL TTC</th>
+    ${budget < Infinity ? '<th>Budget OK ?</th>' : ''}
+    <th>Équipements</th>
+    <th>Lien</th>
+  </tr></thead><tbody>`;
+
+  results.forEach(({apt, dispo, dispoSource, dispoError, prix, frais, base, total, capsOk, budgetOk}) => {
+    const rowClass = !dispo ? 'row-occupied' : (capsOk && budgetOk) ? 'row-match' : 'row-partial';
+
+    let dispoBadge;
+    if (dispoSource === 'airbnb') {
+      dispoBadge = dispo
+        ? '<span class="badge badge-airbnb">🔴 LIVE · Disponible</span>'
+        : '<span class="badge badge-red">🔴 LIVE · Occupé</span>';
+    } else if (dispoError) {
+      dispoBadge = dispo
+        ? '<span class="badge badge-yellow">⚠️ Dispo (Airbnb injoignable)</span>'
+        : '<span class="badge badge-yellow">⚠️ Occupé (données locales)</span>';
+    } else {
+      dispoBadge = dispo
+        ? '<span class="badge badge-green">✅ Disponible</span>'
+        : '<span class="badge badge-red">❌ Occupé</span>';
+    }
+
+    const persBadge = nbPers
+      ? (capsOk ? '<span class="badge badge-green">✅ OK</span>' : '<span class="badge badge-red">❌ Trop petit</span>')
+      : '';
+    const budgetBadge = budget < Infinity
+      ? (budgetOk ? '<span class="badge badge-green">✅ OK</span>' : '<span class="badge badge-red">❌ Dépasse</span>')
+      : '';
+
+    html += `<tr class="${rowClass}">
+      <td>
+        <div class="apt-name">${apt.nom}</div>
+        ${apt.notes ? `<div class="apt-sub">${apt.notes}</div>` : ''}
+        ${apt.ical ? '<span class="apt-live">🔴 Temps réel Airbnb</span>' : '<span class="apt-manual">⚪ Données locales</span>'}
+      </td>
+      <td>${dispoBadge}</td>
+      <td style="text-align:center;font-weight:600">${apt.cap}</td>
+      ${nbPers ? `<td style="text-align:center">${persBadge}</td>` : ''}
+      <td style="text-align:center"><span class="price-cell">${prix.toLocaleString('fr-FR')} ₪</span></td>
+      <td style="text-align:center;color:var(--text-muted)">${base.toLocaleString('fr-FR')} ₪</td>
+      <td style="text-align:center"><span class="frais-cell">${frais > 0 ? '+ ' + frais.toLocaleString('fr-FR') + ' ₪' : '<span style="color:var(--text-light)">—</span>'}</span></td>
+      <td style="text-align:center"><span class="total-cell">${total.toLocaleString('fr-FR')} ₪</span></td>
+      ${budget < Infinity ? `<td style="text-align:center">${budgetBadge}</td>` : ''}
+      <td class="eq-cell">${apt.eq || '<span style="color:var(--text-light)">—</span>'}</td>
+      <td>${apt.url ? `<a href="${apt.url}" target="_blank" class="link-btn">🔗 Voir</a>` : '<span style="color:var(--text-light)">—</span>'}</td>
+    </tr>`;
+  });
+
+  html += '</tbody></table></div>';
+  container.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════
+function showTab(name, btn) {
+  ['devis','appartements','reservations'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = 'none';
+  });
+  document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).style.display = 'block';
+  btn.classList.add('active');
+  if (name === 'appartements') renderAptTable();
+  if (name === 'reservations') { renderResTable(); renderStats(); }
+}
+
+// ═══════════════════════════════════════════════════════
+// APPARTEMENTS CRUD
+// ═══════════════════════════════════════════════════════
+function renderAptTable() {
+  document.getElementById('aptCount').textContent = appartements.length;
+  let html = `<table><thead><tr>
+    <th>Nom</th><th>Cap.</th><th>Ch.</th>
+    <th>Prix HS</th><th>Frais HS</th>
+    <th>Prix MS</th><th>Frais MS</th>
+    <th>Prix BS</th><th>Frais BS</th>
+    <th>iCal Airbnb</th><th>Actions</th>
+  </tr></thead><tbody>`;
+  appartements.forEach((apt, i) => {
+    const f = v => v > 0 ? v.toLocaleString('fr-FR') + ' ₪' : '<span style="color:var(--text-light)">—</span>';
+    html += `<tr>
+      <td>
+        <div style="font-weight:700">${apt.nom}</div>
+        ${apt.notes ? `<div style="font-size:0.72rem;color:var(--text-muted)">${apt.notes}</div>` : ''}
+      </td>
+      <td style="text-align:center;font-weight:600">${apt.cap}</td>
+      <td style="text-align:center">${apt.ch}</td>
+      <td style="text-align:center" class="price-cell">${apt.hs > 0 ? apt.hs.toLocaleString('fr-FR') + ' ₪' : '<span style="color:var(--text-light)">—</span>'}</td>
+      <td style="text-align:center" class="frais-cell" >${f(apt.frais_hs)}</td>
+      <td style="text-align:center;color:#065f46">${apt.ms > 0 ? apt.ms.toLocaleString('fr-FR') + ' ₪' : '<span style="color:var(--text-light)">—</span>'}</td>
+      <td style="text-align:center" class="frais-cell">${f(apt.frais_ms)}</td>
+      <td style="text-align:center;color:#1e40af">${apt.bs > 0 ? apt.bs.toLocaleString('fr-FR') + ' ₪' : '<span style="color:var(--text-light)">—</span>'}</td>
+      <td style="text-align:center" class="frais-cell">${f(apt.frais_bs)}</td>
+      <td>
+        ${apt.ical
+          ? `<span class="badge badge-airbnb">🔴 Connecté</span>`
+          : `<span class="badge badge-grey">⚪ Non connecté</span>`}
+      </td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-ghost btn-sm" onclick="openAptModal(${i})">✏️ Modifier</button>
+        <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="deleteApt(${i})">🗑️</button>
+      </td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('aptTableContainer').innerHTML = html;
+}
+
+function openAptModal(idx = -1) {
+  editAptIdx = idx;
+  if (idx >= 0) {
+    const a = appartements[idx];
+    document.getElementById('aptModalTitle').textContent = '✏️ Modifier l\'appartement';
+    document.getElementById('apt_nom').value   = a.nom;
+    document.getElementById('apt_cap').value   = a.cap;
+    document.getElementById('apt_ch').value    = a.ch;
+    document.getElementById('apt_sdb').value   = a.sdb;
+    document.getElementById('apt_sup').value   = a.sup;
+    document.getElementById('apt_hs').value    = a.hs;
+    document.getElementById('apt_ms').value    = a.ms;
+    document.getElementById('apt_bs').value    = a.bs;
+    document.getElementById('apt_eq').value    = a.eq;
+    document.getElementById('apt_ical').value     = a.ical     || '';
+    document.getElementById('apt_url').value      = a.url      || '';
+    document.getElementById('apt_notes').value    = a.notes    || '';
+    document.getElementById('apt_frais_hs').value = a.frais_hs || '';
+    document.getElementById('apt_frais_ms').value = a.frais_ms || '';
+    document.getElementById('apt_frais_bs').value = a.frais_bs || '';
+  } else {
+    document.getElementById('aptModalTitle').textContent = '+ Ajouter un appartement';
+    ['apt_nom','apt_cap','apt_ch','apt_sdb','apt_sup','apt_hs','apt_ms','apt_bs','apt_frais_hs','apt_frais_ms','apt_frais_bs','apt_eq','apt_ical','apt_url','apt_notes']
+      .forEach(id => document.getElementById(id).value = '');
+  }
+  document.getElementById('aptModal').classList.add('open');
+}
+
+function saveApt() {
+  const nom = document.getElementById('apt_nom').value.trim();
+  const cap = parseInt(document.getElementById('apt_cap').value);
+  const hs  = parseFloat(document.getElementById('apt_hs').value);
+  const ms  = parseFloat(document.getElementById('apt_ms').value);
+  const bs  = parseFloat(document.getElementById('apt_bs').value);
+  if (!nom || !cap || !hs || !ms || !bs) { alert('Champs obligatoires : Nom, Capacité, et les 3 prix.'); return; }
+  const apt = {
+    nom, cap,
+    ch:    parseInt(document.getElementById('apt_ch').value)  || 0,
+    sdb:   parseInt(document.getElementById('apt_sdb').value) || 0,
+    sup:   parseInt(document.getElementById('apt_sup').value) || 0,
+    hs, ms, bs,
+    frais_hs: parseFloat(document.getElementById('apt_frais_hs').value) || 0,
+    frais_ms: parseFloat(document.getElementById('apt_frais_ms').value) || 0,
+    frais_bs: parseFloat(document.getElementById('apt_frais_bs').value) || 0,
+    eq:    document.getElementById('apt_eq').value.trim(),
+    ical:  document.getElementById('apt_ical').value.trim(),
+    url:   document.getElementById('apt_url').value.trim(),
+    notes: document.getElementById('apt_notes').value.trim(),
+  };
+  if (editAptIdx >= 0) appartements[editAptIdx] = apt;
+  else appartements.push(apt);
+  closeModal('aptModal');
+  renderAptTable();
+}
+
+function deleteApt(idx) {
+  if (confirm(`Supprimer "${appartements[idx].nom}" ?`)) { appartements.splice(idx, 1); renderAptTable(); }
+}
+
+// ═══════════════════════════════════════════════════════
+// RESERVATIONS CRUD
+// ═══════════════════════════════════════════════════════
+function renderStats() {
+  const confirmed = reservations.filter(r => r.statut === 'Confirmé').length;
+  const optional  = reservations.filter(r => r.statut === 'Optionnel').length;
+  const today = new Date().toISOString().split('T')[0];
+  const upcoming = reservations.filter(r => r.arr >= today && r.statut !== 'Annulé').length;
+  document.getElementById('statCards').innerHTML = `
+    <div class="stat-card"><div class="stat-num" style="color:#16a34a">${confirmed}</div><div class="stat-lbl">✅ Confirmées</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#d97706">${optional}</div><div class="stat-lbl">⏳ Optionnelles</div></div>
+    <div class="stat-card"><div class="stat-num">${upcoming}</div><div class="stat-lbl">📆 À venir</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#dc2626">${appartements.filter(a=>a.ical).length}</div><div class="stat-lbl">🔴 Connectés Airbnb</div></div>
+  `;
+}
+
+function renderResTable() {
+  const fmtDate = d => d ? new Date(d).toLocaleDateString('fr-FR') : '';
+  if (reservations.length === 0) {
+    document.getElementById('resTableContainer').innerHTML = '<div class="no-results"><span class="icon">📅</span>Aucune réservation manuelle. Les appartements connectés à Airbnb se mettent à jour automatiquement.</div>';
+    return;
+  }
+  let html = `<table><thead><tr>
+    <th>Appartement</th><th>Arrivée</th><th>Départ</th><th>Nuits</th>
+    <th>Pers.</th><th>Statut</th><th>Source</th><th>Client</th><th>Actions</th>
+  </tr></thead><tbody>`;
+  [...reservations].sort((a,b) => a.arr.localeCompare(b.arr)).forEach((r, i) => {
+    const nights = r.arr && r.dep ? Math.round((new Date(r.dep)-new Date(r.arr))/86400000) : '?';
+    const sc = {Confirmé:'badge-green',Optionnel:'badge-yellow',Annulé:'badge-grey',Bloqué:'badge-red'};
+    const orig = reservations.indexOf(r);
+    html += `<tr class="${r.statut==='Annulé'?'row-empty':''}">
+      <td style="font-weight:600">${r.apt}</td>
+      <td>${fmtDate(r.arr)}</td><td>${fmtDate(r.dep)}</td>
+      <td style="text-align:center">${nights}</td>
+      <td style="text-align:center">${r.pers||'—'}</td>
+      <td><span class="badge ${sc[r.statut]||'badge-grey'}">${r.statut}</span></td>
+      <td><span class="badge badge-blue">${r.source}</span></td>
+      <td>${r.client||'—'}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-ghost btn-sm" onclick="openResModal(${orig})">✏️</button>
+        <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="deleteRes(${orig})">🗑️</button>
+      </td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('resTableContainer').innerHTML = html;
+}
+
+function openResModal(idx=-1) {
+  editResIdx = idx;
+  const sel = document.getElementById('res_apt');
+  sel.innerHTML = appartements.filter(a=>!a.ical).map(a=>`<option>${a.nom}</option>`).join('') ||
+    '<option disabled>Tous les apparts ont un lien iCal Airbnb</option>';
+  if (idx>=0) {
+    const r = reservations[idx];
+    document.getElementById('resModalTitle').textContent = '✏️ Modifier la réservation';
+    sel.value = r.apt;
+    document.getElementById('res_arr').value     = r.arr;
+    document.getElementById('res_dep').value     = r.dep;
+    document.getElementById('res_pers').value    = r.pers||'';
+    document.getElementById('res_statut').value  = r.statut;
+    document.getElementById('res_source').value  = r.source;
+    document.getElementById('res_client').value  = r.client||'';
+    document.getElementById('res_montant').value = r.montant||'';
+    document.getElementById('res_notes').value   = r.notes||'';
+  } else {
+    document.getElementById('resModalTitle').textContent = '+ Ajouter une réservation manuelle';
+    ['res_arr','res_dep','res_pers','res_client','res_montant','res_notes'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('res_statut').value = 'Confirmé';
+    document.getElementById('res_source').value = 'Airbnb';
+  }
+  document.getElementById('resModal').classList.add('open');
+}
+
+function saveRes() {
+  const apt=document.getElementById('res_apt').value, arr=document.getElementById('res_arr').value, dep=document.getElementById('res_dep').value;
+  if (!apt||!arr||!dep){alert('Appartement, arrivée et départ sont obligatoires.');return;}
+  const res={apt,arr,dep,pers:parseInt(document.getElementById('res_pers').value)||null,statut:document.getElementById('res_statut').value,source:document.getElementById('res_source').value,client:document.getElementById('res_client').value.trim(),montant:parseFloat(document.getElementById('res_montant').value)||null,notes:document.getElementById('res_notes').value.trim()};
+  if(editResIdx>=0)reservations[editResIdx]=res; else reservations.push(res);
+  closeModal('resModal'); renderResTable(); renderStats();
+}
+
+function deleteRes(idx){if(confirm('Supprimer cette réservation ?')){reservations.splice(idx,1);renderResTable();renderStats();}}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+async function doRefresh(btn) {
+  const orig = btn.textContent;
+  btn.textContent = '⏳ Chargement…'; btn.disabled = true;
+  const ok = await refreshIcalData();
+  btn.textContent = orig; btn.disabled = false;
+  const n = Object.keys(ICAL_DATA).filter(k => ICAL_DATA[k]?.ok).length;
+  document.getElementById('icalStatus').textContent = ok
+    ? `✅ ${n} appart(s) lus depuis Airbnb`
+    : '⚠️ Serveur non disponible — lancez lancer_devis.py';
+}
+
+// Chargement initial des données iCal au démarrage
+loadIcalData().then(() => {
+  const n = Object.keys(ICAL_DATA).filter(k => ICAL_DATA[k]?.ok).length;
+  const el = document.getElementById('icalStatus');
+  if (el) el.textContent = n > 0 ? `✅ ${n} appart(s) connectés Airbnb` : '⚠️ Lancez lancer_devis.py pour la connexion Airbnb';
+});
+
+renderAptTable();
+</script>
+</body>
+</html>
