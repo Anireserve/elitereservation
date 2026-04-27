@@ -802,27 +802,21 @@ tbody td { padding: 12px 14px; vertical-align: middle; }
       <div class="search-grid">
         <div class="field-group">
           <label>📅 Date d'arrivée</label>
-          <input type="date" id="dateArrivee" oninput="updateSeason()">
+          <input type="date" id="dateArrivee">
         </div>
         <div class="field-group">
           <label>📅 Date de départ</label>
-          <input type="date" id="dateDepart" oninput="updateSeason()">
+          <input type="date" id="dateDepart">
         </div>
         <div class="field-group">
-          <label>👥 Personnes</label>
+          <label>👥 Nb de personnes</label>
           <input type="number" id="nbPersonnes" min="1" max="30" placeholder="Ex : 4">
-        </div>
-        <div class="field-group">
-          <label>💰 Budget max (₪)</label>
-          <input type="number" id="budget" min="0" placeholder="Sans limite si vide">
-          <span class="hint">Laissez vide = pas de limite</span>
         </div>
       </div>
 
       <div class="search-actions">
-        <div id="seasonBadge" class="season-pill season-none">ℹ️ Entrez une date pour voir la saison</div>
-        <button class="btn btn-primary" id="searchBtn" onclick="searchApts()">🔍 Rechercher</button>
-        <button onclick="doRefresh(this)" class="btn btn-danger">🔄 Rafraîchir Airbnb</button>
+        <button class="btn btn-primary" id="searchBtn" onclick="searchApts()">🔍 Rechercher les disponibles</button>
+        <button onclick="doRefresh(this)" class="btn btn-secondary">🔄 Rafraîchir Airbnb</button>
         <span id="icalStatus"></span>
       </div>
     </div>
@@ -1181,7 +1175,6 @@ async function searchApts() {
   const arrStr = document.getElementById('dateArrivee').value;
   const depStr = document.getElementById('dateDepart').value;
   const nbPers = parseInt(document.getElementById('nbPersonnes').value) || 0;
-  const budget = parseFloat(document.getElementById('budget').value) || Infinity;
   const container = document.getElementById('resultsContainer');
   const countEl   = document.getElementById('resultsCount');
   const summaryBar = document.getElementById('summaryBar');
@@ -1201,8 +1194,8 @@ async function searchApts() {
   const connectedCount = Object.keys(ICAL_DATA).filter(k => ICAL_DATA[k]?.ok).length;
   document.getElementById('loadingText').textContent =
     connectedCount > 0
-      ? `Vérification des disponibilités (${connectedCount} apparts connectés Airbnb)…`
-      : 'Vérification des disponibilités (lancez lancer_devis.py pour la connexion Airbnb)…';
+      ? `Vérification des disponibilités (${connectedCount} apparts Airbnb)…`
+      : 'Vérification des disponibilités…';
 
   await new Promise(r => setTimeout(r, 200));
   loadingBar.style.display = 'none';
@@ -1213,100 +1206,66 @@ async function searchApts() {
   summaryBar.innerHTML = `
     <div class="summary-chip">📅 ${fmtDate(arrStr)} → ${fmtDate(depStr)}</div>
     <div class="summary-chip">🌙 <strong>${nights}</strong> nuits</div>
-    ${nbPers ? `<div class="summary-chip">👥 <strong>${nbPers}</strong> personnes</div>` : ''}
-    ${budget < Infinity ? `<div class="summary-chip">💰 Max <strong>${budget.toLocaleString('fr-FR')} ₪</strong></div>` : ''}
+    ${nbPers ? `<div class="summary-chip">👥 <strong>${nbPers}</strong> pers. min.</div>` : ''}
   `;
 
+  // Calculer dispo pour chaque appart
   const results = appartements.map(apt => {
-    let dispo, dispoSource, dispoError = false;
+    let dispo, dispoSource;
     if (apt.ical && ICAL_DATA[apt.nom]) {
       const blocked = isBlockedByIcal(apt.nom, arr, dep);
       if (blocked === null) {
         dispo = !isBlockedManual(apt, arr, dep);
-        dispoSource = 'error'; dispoError = true;
+        dispoSource = 'error';
       } else {
         dispo = !blocked;
         dispoSource = 'airbnb';
       }
     } else if (apt.ical) {
       dispo = !isBlockedManual(apt, arr, dep);
-      dispoSource = 'error'; dispoError = true;
+      dispoSource = 'error';
     } else {
       dispo = !isBlockedManual(apt, arr, dep);
       dispoSource = 'manual';
     }
-    const prix   = getPrix(apt, arrStr);
-    const frais  = getFrais(apt, arrStr);
-    const base   = prix * nights;
-    const total  = base + frais;
-    const capsOk   = nbPers ? apt.cap >= nbPers : true;
-    const budgetOk = budget < Infinity ? total <= budget : true;
-    let score = 0;
-    if (dispo) score += 4;
-    if (capsOk) score += 2;
-    if (budgetOk) score += 1;
-    return { apt, dispo, dispoSource, dispoError, prix, frais, base, total, capsOk, budgetOk, score };
-  }).sort((a, b) => b.score - a.score);
+    const capsOk = nbPers ? apt.cap >= nbPers : true;
+    return { apt, dispo, dispoSource, capsOk };
+  });
 
-  const fullMatch = results.filter(r => r.dispo && r.capsOk && r.budgetOk).length;
+  // Uniquement les disponibles (et capacité suffisante si précisée)
+  const disponibles = results.filter(r => r.dispo && r.capsOk);
   const airbnbCount = results.filter(r => r.dispoSource === 'airbnb').length;
-  countEl.textContent = `${fullMatch} correspondance(s) parfaite(s) · ${airbnbCount} appart(s) lus depuis Airbnb`;
+
+  countEl.textContent = `${disponibles.length} appartement(s) disponible(s) · ${airbnbCount} connectés Airbnb`;
+
+  if (disponibles.length === 0) {
+    container.innerHTML = '<div class="no-results"><span class="icon">😔</span>Aucun appartement disponible pour ces dates' + (nbPers ? ' et ce nombre de personnes' : '') + '.</div>';
+    return;
+  }
 
   let html = `<div class="table-wrap"><table><thead><tr>
     <th>Appartement</th>
-    <th>Disponibilité</th>
-    <th>Cap.</th>
-    ${nbPers ? '<th>Pers. OK ?</th>' : ''}
-    <th>Prix / nuit</th>
-    <th>${nights} nuits × prix</th>
-    <th>Frais service</th>
-    <th>TOTAL TTC</th>
-    ${budget < Infinity ? '<th>Budget OK ?</th>' : ''}
-    <th>Équipements</th>
-    <th>Lien</th>
+    <th>Source</th>
+    <th>Capacité</th>
   </tr></thead><tbody>`;
 
-  results.forEach(({apt, dispo, dispoSource, dispoError, prix, frais, base, total, capsOk, budgetOk}) => {
-    const rowClass = !dispo ? 'row-occupied' : (capsOk && budgetOk) ? 'row-match' : 'row-partial';
-
-    let dispoBadge;
+  disponibles.forEach(({ apt, dispoSource }) => {
+    let sourceBadge;
     if (dispoSource === 'airbnb') {
-      dispoBadge = dispo
-        ? '<span class="badge badge-airbnb">🔴 LIVE · Disponible</span>'
-        : '<span class="badge badge-red">🔴 LIVE · Occupé</span>';
-    } else if (dispoError) {
-      dispoBadge = dispo
-        ? '<span class="badge badge-yellow">⚠️ Dispo (Airbnb injoignable)</span>'
-        : '<span class="badge badge-yellow">⚠️ Occupé (données locales)</span>';
+      sourceBadge = '<span class="badge badge-airbnb">🔴 Airbnb live</span>';
+    } else if (dispoSource === 'error') {
+      sourceBadge = '<span class="badge badge-yellow">⚠️ Non vérifié</span>';
     } else {
-      dispoBadge = dispo
-        ? '<span class="badge badge-green">✅ Disponible</span>'
-        : '<span class="badge badge-red">❌ Occupé</span>';
+      sourceBadge = '<span class="badge badge-grey">📋 Manuel</span>';
     }
 
-    const persBadge = nbPers
-      ? (capsOk ? '<span class="badge badge-green">✅ OK</span>' : '<span class="badge badge-red">❌ Trop petit</span>')
-      : '';
-    const budgetBadge = budget < Infinity
-      ? (budgetOk ? '<span class="badge badge-green">✅ OK</span>' : '<span class="badge badge-red">❌ Dépasse</span>')
-      : '';
-
-    html += `<tr class="${rowClass}">
+    html += `<tr class="row-match">
       <td class="apt-cell">
         <div class="apt-name">${apt.nom}</div>
         ${apt.notes ? `<div class="apt-sub">${apt.notes}</div>` : ''}
-        ${apt.ical ? '<span class="apt-live">🔴 Temps réel Airbnb</span>' : '<span class="apt-manual">⚪ Données locales</span>'}
       </td>
-      <td data-label="Dispo">${dispoBadge}</td>
-      <td data-label="Capacité" style="text-align:center;font-weight:600">${apt.cap} pers.</td>
-      ${nbPers ? `<td data-label="Personnes" style="text-align:center">${persBadge}</td>` : ''}
-      <td data-label="Prix/nuit" style="text-align:center"><span class="price-cell">${prix.toLocaleString('fr-FR')} ₪</span></td>
-      <td data-label="${nights} nuits" style="text-align:center;color:var(--text-muted)">${base.toLocaleString('fr-FR')} ₪</td>
-      <td data-label="Frais" style="text-align:center"><span class="frais-cell">${frais > 0 ? '+ ' + frais.toLocaleString('fr-FR') + ' ₪' : '<span style="color:var(--text-light)">—</span>'}</span></td>
-      <td data-label="TOTAL" style="text-align:center"><span class="total-cell">${total.toLocaleString('fr-FR')} ₪</span></td>
-      ${budget < Infinity ? `<td data-label="Budget" style="text-align:center">${budgetBadge}</td>` : ''}
-      <td data-label="Équip." class="eq-cell hide-mobile">${apt.eq || '<span style="color:var(--text-light)">—</span>'}</td>
-      <td data-label="Lien">${apt.url ? `<a href="${apt.url}" target="_blank" class="link-btn">🔗 Voir</a>` : '<span style="color:var(--text-light)">—</span>'}</td>
+      <td data-label="Source">${sourceBadge}</td>
+      <td data-label="Capacité" style="text-align:center;font-weight:700;font-size:1rem">${apt.cap} <span style="font-size:0.75rem;font-weight:400;color:var(--text-muted)">pers.</span></td>
     </tr>`;
   });
 
