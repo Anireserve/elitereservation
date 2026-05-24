@@ -810,12 +810,15 @@ tbody td { padding: 12px 14px; vertical-align: middle; }
         </div>
         <div class="field-group">
           <label>👥 Nb de personnes</label>
-          <input type="number" id="nbPersonnes" min="1" max="30" placeholder="Ex : 4">
+          <input type="number" id="nbPersonnes" min="1" max="30" placeholder="Tous">
+        </div>
+        <div class="field-group">
+          <label>💰 Budget client (₪/nuit)</label>
+          <input type="number" id="budget" min="0" placeholder="Sans limite">
         </div>
       </div>
-
       <div class="search-actions">
-        <button class="btn btn-primary" id="searchBtn" onclick="searchApts()">🔍 Rechercher les disponibles</button>
+        <button class="btn btn-primary" id="searchBtn" onclick="searchApts()">🔍 Vérifier les disponibilités</button>
         <button onclick="doRefresh(this)" class="btn btn-secondary">🔄 Rafraîchir Airbnb</button>
         <span id="icalStatus"></span>
       </div>
@@ -829,16 +832,11 @@ tbody td { padding: 12px 14px; vertical-align: middle; }
     <div id="summaryBar" class="summary-bar" style="display:none"></div>
 
     <div class="results-header">
-      <div class="results-title">Résultats</div>
+      <div class="results-title" id="resultsTitle">🏠 Tous les appartements</div>
       <div class="results-count" id="resultsCount"></div>
     </div>
 
-    <div id="resultsContainer">
-      <div class="no-results">
-        <span class="icon">🔍</span>
-        Entrez vos critères et cliquez sur Rechercher.
-      </div>
-    </div>
+    <div id="resultsContainer"></div>
   </div>
 
   <!-- ═══════════ TAB APPARTEMENTS ═══════════ -->
@@ -1171,113 +1169,130 @@ function isBlockedManual(apt, arrDate, depDate) {
 // ═══════════════════════════════════════════════════════
 // SEARCH
 // ═══════════════════════════════════════════════════════
-async function searchApts() {
-  const arrStr = document.getElementById('dateArrivee').value;
-  const depStr = document.getElementById('dateDepart').value;
-  const nbPers = parseInt(document.getElementById('nbPersonnes').value) || 0;
+function renderTable(results, arrStr) {
   const container = document.getElementById('resultsContainer');
   const countEl   = document.getElementById('resultsCount');
-  const summaryBar = document.getElementById('summaryBar');
-  const btn = document.getElementById('searchBtn');
-  const loadingBar = document.getElementById('loadingBar');
+  const withDates = !!arrStr;
 
-  if (!arrStr || !depStr) { container.innerHTML = '<div class="no-results"><span class="icon">⚠️</span>Veuillez entrer les dates d\'arrivée et de départ.</div>'; return; }
-  const arr = new Date(arrStr), dep = new Date(depStr);
-  if (dep <= arr) { container.innerHTML = '<div class="no-results"><span class="icon">⚠️</span>La date de départ doit être après la date d\'arrivée.</div>'; return; }
-  const nights = Math.round((dep - arr) / 86400000);
+  const dispo    = results.filter(r => r.dispo === true).length;
+  const occupe   = results.filter(r => r.dispo === false).length;
+  const inconnu  = results.filter(r => r.dispo === null).length;
+  const airbnb   = results.filter(r => r.dispoSource === 'airbnb').length;
 
-  btn.disabled = true;
-  loadingBar.style.display = 'flex';
-  container.innerHTML = '';
-  summaryBar.style.display = 'none';
-
-  const connectedCount = Object.keys(ICAL_DATA).filter(k => ICAL_DATA[k]?.ok).length;
-  document.getElementById('loadingText').textContent =
-    connectedCount > 0
-      ? `Vérification des disponibilités (${connectedCount} apparts Airbnb)…`
-      : 'Vérification des disponibilités…';
-
-  await new Promise(r => setTimeout(r, 200));
-  loadingBar.style.display = 'none';
-  btn.disabled = false;
-
-  summaryBar.style.display = 'flex';
-  const fmtDate = d => new Date(d).toLocaleDateString('fr-FR');
-  summaryBar.innerHTML = `
-    <div class="summary-chip">📅 ${fmtDate(arrStr)} → ${fmtDate(depStr)}</div>
-    <div class="summary-chip">🌙 <strong>${nights}</strong> nuits</div>
-    ${nbPers ? `<div class="summary-chip">👥 <strong>${nbPers}</strong> pers. min.</div>` : ''}
-  `;
-
-  // Calculer dispo pour chaque appart
-  const results = appartements.map(apt => {
-    let dispo, dispoSource;
-    if (apt.ical && ICAL_DATA[apt.nom]) {
-      const blocked = isBlockedByIcal(apt.nom, arr, dep);
-      if (blocked === null) {
-        dispo = !isBlockedManual(apt, arr, dep);
-        dispoSource = 'error';
-      } else {
-        dispo = !blocked;
-        dispoSource = 'airbnb';
-      }
-    } else if (apt.ical) {
-      dispo = !isBlockedManual(apt, arr, dep);
-      dispoSource = 'error';
-    } else {
-      dispo = !isBlockedManual(apt, arr, dep);
-      dispoSource = 'manual';
-    }
-    const capsOk = nbPers ? apt.cap >= nbPers : true;
-    return { apt, dispo, dispoSource, capsOk };
-  });
-
-  // Uniquement les disponibles (et capacité suffisante si précisée)
-  const disponibles = results.filter(r => r.dispo && r.capsOk);
-  const airbnbCount = results.filter(r => r.dispoSource === 'airbnb').length;
-
-  countEl.textContent = `${disponibles.length} appartement(s) disponible(s) · ${airbnbCount} connectés Airbnb`;
-
-  if (disponibles.length === 0) {
-    container.innerHTML = '<div class="no-results"><span class="icon">😔</span>Aucun appartement disponible pour ces dates' + (nbPers ? ' et ce nombre de personnes' : '') + '.</div>';
-    return;
+  if (withDates) {
+    countEl.textContent = `✅ ${dispo} dispo · ❌ ${occupe} occupé · ⚠️ ${inconnu} non vérifié · ${airbnb} Airbnb live`;
+  } else {
+    countEl.textContent = `${results.length} appartements · ${airbnb} connectés Airbnb`;
   }
 
   let html = `<div class="table-wrap"><table><thead><tr>
     <th>Appartement</th>
-    <th>Source</th>
+    ${withDates ? '<th>Disponibilité</th>' : ''}
     <th>Capacité</th>
     <th>Prix / nuit</th>
   </tr></thead><tbody>`;
 
-  disponibles.forEach(({ apt, dispoSource }) => {
-    let sourceBadge;
-    if (dispoSource === 'airbnb') {
-      sourceBadge = '<span class="badge badge-airbnb">🔴 Airbnb live</span>';
-    } else if (dispoSource === 'error') {
-      sourceBadge = '<span class="badge badge-yellow">⚠️ Non vérifié</span>';
-    } else {
-      sourceBadge = '<span class="badge badge-grey">📋 Manuel</span>';
+  results.forEach(({ apt, dispo, dispoSource }) => {
+    let rowClass = '';
+    let dispoBadge = '';
+
+    if (withDates) {
+      if (dispo === true) {
+        rowClass = 'row-match';
+        if (dispoSource === 'airbnb') dispoBadge = '<span class="badge badge-airbnb">🔴 Airbnb · Dispo</span>';
+        else if (dispoSource === 'error') dispoBadge = '<span class="badge badge-yellow">⚠️ Dispo (non vérifié)</span>';
+        else dispoBadge = '<span class="badge badge-green">✅ Disponible</span>';
+      } else if (dispo === false) {
+        rowClass = 'row-occupied';
+        if (dispoSource === 'airbnb') dispoBadge = '<span class="badge badge-red">🔴 Airbnb · Occupé</span>';
+        else dispoBadge = '<span class="badge badge-red">❌ Occupé</span>';
+      } else {
+        dispoBadge = '<span class="badge badge-grey">— Inconnu</span>';
+      }
     }
 
-    const prix = getPrix(apt, arrStr);
+    const prix = arrStr ? getPrix(apt, arrStr) : Math.min(...[apt.hs, apt.ms, apt.bs].filter(p => p > 0)) || 0;
     const prixCell = prix > 0
       ? `<span style="font-weight:700;color:var(--primary)">${prix.toLocaleString('fr-FR')} ₪</span>`
-      : `<span style="color:var(--text-light);font-size:0.8rem">— à renseigner</span>`;
+      : `<span style="color:var(--text-light);font-size:0.8rem">—</span>`;
 
-    html += `<tr class="row-match">
+    html += `<tr class="${rowClass}">
       <td class="apt-cell">
         <div class="apt-name">${apt.nom}</div>
         ${apt.notes ? `<div class="apt-sub">${apt.notes}</div>` : ''}
       </td>
-      <td data-label="Source">${sourceBadge}</td>
-      <td data-label="Capacité" style="text-align:center;font-weight:700;font-size:1rem">${apt.cap} <span style="font-size:0.75rem;font-weight:400;color:var(--text-muted)">pers.</span></td>
+      ${withDates ? `<td data-label="Dispo">${dispoBadge}</td>` : ''}
+      <td data-label="Capacité" style="text-align:center;font-weight:700">${apt.cap} <span style="font-size:0.75rem;font-weight:400;color:var(--text-muted)">pers.</span></td>
       <td data-label="Prix/nuit" style="text-align:center">${prixCell}</td>
     </tr>`;
   });
 
   html += '</tbody></table></div>';
   container.innerHTML = html;
+}
+
+function showAllApts() {
+  document.getElementById('resultsTitle').textContent = '🏠 Tous les appartements';
+  document.getElementById('summaryBar').style.display = 'none';
+  const results = appartements.map(apt => ({ apt, dispo: null, dispoSource: null }));
+  renderTable(results, '');
+}
+
+async function searchApts() {
+  const arrStr  = document.getElementById('dateArrivee').value;
+  const depStr  = document.getElementById('dateDepart').value;
+  const nbPers  = parseInt(document.getElementById('nbPersonnes').value) || 0;
+  const budget  = parseFloat(document.getElementById('budget').value) || Infinity;
+  const summaryBar = document.getElementById('summaryBar');
+  const btn     = document.getElementById('searchBtn');
+  const loadingBar = document.getElementById('loadingBar');
+
+  if (!arrStr || !depStr) { showAllApts(); return; }
+  const arr = new Date(arrStr), dep = new Date(depStr);
+  if (dep <= arr) { alert('La date de départ doit être après la date d\'arrivée.'); return; }
+  const nights = Math.round((dep - arr) / 86400000);
+
+  btn.disabled = true;
+  loadingBar.style.display = 'flex';
+  document.getElementById('loadingText').textContent = `Vérification sur ${Object.keys(ICAL_DATA).filter(k=>ICAL_DATA[k]?.ok).length} apparts Airbnb…`;
+  await new Promise(r => setTimeout(r, 200));
+  loadingBar.style.display = 'none';
+  btn.disabled = false;
+
+  const fmtDate = d => new Date(d).toLocaleDateString('fr-FR');
+  summaryBar.style.display = 'flex';
+  summaryBar.innerHTML = `
+    <div class="summary-chip">📅 ${fmtDate(arrStr)} → ${fmtDate(depStr)}</div>
+    <div class="summary-chip">🌙 <strong>${nights}</strong> nuits</div>
+    ${nbPers ? `<div class="summary-chip">👥 <strong>${nbPers}</strong> pers. min.</div>` : ''}
+    ${budget < Infinity ? `<div class="summary-chip">💰 Max <strong>${budget.toLocaleString('fr-FR')} ₪</strong>/nuit</div>` : ''}
+  `;
+
+  document.getElementById('resultsTitle').textContent = '🏠 Disponibilités';
+
+  const results = appartements
+    .map(apt => {
+      let dispo, dispoSource;
+      if (apt.ical && ICAL_DATA[apt.nom]) {
+        const blocked = isBlockedByIcal(apt.nom, arr, dep);
+        dispo = blocked === null ? !isBlockedManual(apt, arr, dep) : !blocked;
+        dispoSource = blocked === null ? 'error' : 'airbnb';
+      } else if (apt.ical) {
+        dispo = !isBlockedManual(apt, arr, dep);
+        dispoSource = 'error';
+      } else {
+        dispo = !isBlockedManual(apt, arr, dep);
+        dispoSource = 'manual';
+      }
+      const prix = getPrix(apt, arrStr);
+      const capsOk   = nbPers ? apt.cap >= nbPers : true;
+      const budgetOk = (budget < Infinity && prix > 0) ? prix <= budget : true;
+      const ok = capsOk && budgetOk;
+      return { apt, dispo: ok ? dispo : false, dispoSource };
+    })
+    .sort((a, b) => (b.dispo === true ? 1 : 0) - (a.dispo === true ? 1 : 0));
+
+  renderTable(results, arrStr);
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1493,6 +1508,7 @@ loadIcalData().then(() => {
 });
 
 renderAptTable();
+showAllApts();
 </script>
 </body>
 </html>
