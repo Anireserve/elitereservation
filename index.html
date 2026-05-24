@@ -1247,6 +1247,7 @@ async function searchApts() {
     <th>Appartement</th>
     <th>Source</th>
     <th>Capacité</th>
+    <th>Prix / nuit</th>
   </tr></thead><tbody>`;
 
   disponibles.forEach(({ apt, dispoSource }) => {
@@ -1259,6 +1260,11 @@ async function searchApts() {
       sourceBadge = '<span class="badge badge-grey">📋 Manuel</span>';
     }
 
+    const prix = getPrix(apt, arrStr);
+    const prixCell = prix > 0
+      ? `<span style="font-weight:700;color:var(--primary)">${prix.toLocaleString('fr-FR')} ₪</span>`
+      : `<span style="color:var(--text-light);font-size:0.8rem">— à renseigner</span>`;
+
     html += `<tr class="row-match">
       <td class="apt-cell">
         <div class="apt-name">${apt.nom}</div>
@@ -1266,6 +1272,7 @@ async function searchApts() {
       </td>
       <td data-label="Source">${sourceBadge}</td>
       <td data-label="Capacité" style="text-align:center;font-weight:700;font-size:1rem">${apt.cap} <span style="font-size:0.75rem;font-weight:400;color:var(--text-muted)">pers.</span></td>
+      <td data-label="Prix/nuit" style="text-align:center">${prixCell}</td>
     </tr>`;
   });
 
